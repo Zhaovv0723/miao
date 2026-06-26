@@ -126,7 +126,7 @@
             width: min(210px, 40vw);
             pointer-events: none;
         }
-        /* 底部上浮动画：无旋转，仅左右轻微偏移 */
+        /* 底部上浮动画：无旋转，增加向左偏移，填满左侧 */
         @keyframes bubbleUp {
             0% {
                 transform: translateY(0) translateX(0);
@@ -139,18 +139,18 @@
                 opacity: 1;
             }
             100% {
-                transform: translateY(-110vh) translateX(30px);
+                transform: translateY(-110vh) translateX(-20px);
                 opacity: 0;
             }
         }
-        /* 点击瞬间铺满图片，带旋转上浮 */
+        /* 点击瞬间铺满图片，带旋转上浮，往左偏移更多 */
         @keyframes initFloat {
             0% {
                 opacity: 1;
                 transform: rotate(0deg);
             }
             100% {
-                transform: translateY(-110vh) translateX(-20px) rotate(360deg);
+                transform: translateY(-110vh) translateX(-25px) rotate(360deg);
                 opacity: 0;
             }
         }
@@ -183,16 +183,17 @@
     <script>
         const bubbleBox = document.getElementById("bubbleArea");
 
-        // 持续底部冒出图片，不旋转、上浮速度快
+        // 持续底部冒出图片，大范围覆盖左侧，不旋转、上浮速度快
         function createNewBubble() {
             const img = document.createElement("img");
             img.src = "m.png";
             img.className = "bubble-img";
-            img.style.left = Math.random() * 90 + "%";
+            // left范围0~98%，极大提升左侧出现概率
+            img.style.left = Math.random() * 98 + "%";
             img.style.bottom = "-210px";
             const speed = Math.random() * 4 + 4;
             img.style.animation = `bubbleUp ${speed}s linear forwards`;
-            img.style.animationDelay = Math.random() * 1.5 + "s";
+            img.style.animationDelay = Math.random() * 1.2 + "s";
             bubbleBox.appendChild(img);
             img.addEventListener("animationend", () => {
                 img.remove();
@@ -200,13 +201,13 @@
             })
         }
 
-        // 点击按钮瞬间铺满40张大图（带旋转）
+        // 点击按钮瞬间生成75张图，左侧高密度铺满
         function fillScreenImg() {
-            for(let i = 0; i < 40; i++){
+            for(let i = 0; i < 75; i++){
                 const img = document.createElement("img");
                 img.src = "m.png";
                 img.className = "bubble-img";
-                img.style.left = Math.random() * 90 + "%";
+                img.style.left = Math.random() * 98 + "%";
                 img.style.top = Math.random() * 80 + "%";
                 const time = Math.random() * 6 + 5;
                 img.style.animation = `initFloat ${time}s linear forwards`;
@@ -215,14 +216,15 @@
             }
         }
 
-        // 页面切换动画
+        // 页面切换动画，一次性生成30个持续上浮气泡，左侧持续填充
         function openBubble() {
             document.getElementById("startPage").style.opacity = "0";
             setTimeout(() => {
                 document.getElementById("startPage").style.display = "none";
                 bubbleBox.style.display = "block";
                 fillScreenImg();
-                for(let i = 0; i < 18; i++){
+                // 初始上浮气泡增加至30个，左侧全程不会空白
+                for(let i = 0; i < 30; i++){
                     createNewBubble();
                 }
             }, 600);
